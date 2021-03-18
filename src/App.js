@@ -1,7 +1,11 @@
+import Layout from "./components/Layout/Layut";
+
 const App = () => {
   return (
     <div className="container mt-4">
-      <h1>Hello from react App</h1>
+      <Layout>
+        <p>AUX</p>
+      </Layout>
     </div>
   );
 };
