@@ -1,0 +1,11 @@
+.Price {
+  width: auto;
+  max-width: 500px;
+  margin: auto;
+  margin-bottom: 7px;
+  text-align: center;
+  color: rgb(179, 74, 48);
+  border: #ebd4b1 solid 3px;
+  border-radius: 20px;
+  background-color: #f8f2ea;
+}

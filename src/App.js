@@ -1,11 +1,11 @@
-import Layout from "./components/Layout/Layut";
+import Layout from "./hoc/Layout/Layout";
+import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
 
 const App = () => {
   return (
     <div className="container mt-4">
-      <Layout>
-        <p>AUX</p>
-      </Layout>
+      <Layout />
+      <BurgerBuilder />
     </div>
   );
 };
