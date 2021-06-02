@@ -7,6 +7,7 @@ import Modal from "../../components/UI/Modal/Modal";
 import Aux from "../../hoc/aux1";
 import "./BurgerBuilder.css";
 import Spinner from "../../components/UI/Spinner/Spinner";
+import WithErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 const INGREDIENT_PRICES = {
   salad: 0.5,
   bacon: 1,
@@ -15,17 +16,25 @@ const INGREDIENT_PRICES = {
 };
 class BurgerBuilder extends Component {
   state = {
-    ingredients: {
-      salad: 0,
-      bacon: 0,
-      cheese: 0,
-      meat: 0,
-    },
+    ingredients: null,
     totalPrice: 0,
     purchasable: false,
     purchasing: false,
     loading: false,
+    error: false,
   };
+  componentDidMount() {
+    axios
+      .get(
+        "https://react-my-burger-cc4ec-default-rtdb.firebaseio.com/ingredients.json"
+      )
+      .then((res) => {
+        this.setState({ ingredients: res.data });
+      })
+      .catch((error) => {
+        this.setState({ error: true });
+      });
+  }
   updatePurchaseState = (ingredients, price) => {
     // const ingredients = { ...this.state.ingredient };
     // const ingKeys = Object.keys(ingredients);
@@ -36,7 +45,7 @@ class BurgerBuilder extends Component {
   };
 
   addIngredientHandler = (type) => {
-    const updatedCounted = this.state.ingredients[type] + 1; //>> العدد القديم للمكون اللي عايز ازود عليه 1
+    const updatedCounted = this.state.ingredients[type] + 1;
     let updatedIngredient = { ...this.state.ingredients };
     updatedIngredient[type] = updatedCounted;
     const newPrice = this.state.totalPrice + INGREDIENT_PRICES[type];
@@ -46,7 +55,7 @@ class BurgerBuilder extends Component {
   };
   removeIngredientHandler = (type) => {
     if (this.state.ingredients[type] !== 0) {
-      const updatedCounted = this.state.ingredients[type] - 1; //>> 1العدد القديم للمكون اللي عايز انقص  منه
+      const updatedCounted = this.state.ingredients[type] - 1;
       let updatedIngredient = { ...this.state.ingredients };
       updatedIngredient[type] = updatedCounted;
       const newPrice = this.state.totalPrice - INGREDIENT_PRICES[type];
@@ -97,7 +106,7 @@ class BurgerBuilder extends Component {
           show={this.state.purchasing}
           canclePurchase={this.canclePurchaseHandler}
         >
-          {this.state.loading ? (
+          {!this.state.ingredients ? null : this.state.loading ? (
             <Spinner />
           ) : (
             <OrderSummary
@@ -108,18 +117,26 @@ class BurgerBuilder extends Component {
             />
           )}
         </Modal>
-        <Burger ingredients={this.state.ingredients} />
-        <h3 className="Price">Price : {this.state.totalPrice}</h3>
-        <BuildControls
-          ingrediantAdded={this.addIngredientHandler}
-          ingrediantRemoved={this.removeIngredientHandler}
-          disabled={disabled}
-          purchasable={this.state.purchasable}
-          orderd={this.purchaseHandler}
-        />
+        {this.state.ingredients ? (
+          <Aux>
+            <Burger ingredients={this.state.ingredients} />
+            <h3 className="Price">Price : {this.state.totalPrice}</h3>
+            <BuildControls
+              ingrediantAdded={this.addIngredientHandler}
+              ingrediantRemoved={this.removeIngredientHandler}
+              disabled={disabled}
+              purchasable={this.state.purchasable}
+              orderd={this.purchaseHandler}
+            />
+          </Aux>
+        ) : this.state.error ? (
+          <p className="mt-5">ingredient can't be loaded</p>
+        ) : (
+          <Spinner />
+        )}
       </Aux>
     );
   }
 }
 
-export default BurgerBuilder;
+export default WithErrorHandler(BurgerBuilder, axios);

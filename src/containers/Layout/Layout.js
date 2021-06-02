@@ -12,7 +12,7 @@ class Layout extends Component {
   };
   sideDrowerToggleHandler = () => {
     this.setState((prevState) => {
-      //to prevent unecpected out comes
+      //to prevent unexcpected out comes
       return { showSideDrower: !prevState.showSideDrower };
     });
   };
